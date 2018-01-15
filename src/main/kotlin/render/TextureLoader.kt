@@ -6,6 +6,7 @@ import javax.imageio.ImageIO
 import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL12
 import org.lwjgl.opengl.GL11.*
+import java.io.File
 
 /**
  * TextureLoader class adapted from Krythic@StackOverflow
@@ -60,7 +61,7 @@ object TextureLoader {
 
     fun loadImage(loc: String): BufferedImage? {
         try {
-            return ImageIO.read(Main::class.java.getResource(loc))
+            return ImageIO.read(File(loc))
         } catch (e: IOException) {
             //Error Handling Here
         }

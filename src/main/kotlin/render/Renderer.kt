@@ -1,5 +1,7 @@
 package render
 
+import models.RawModel
+import models.TexturedModel
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL20.*
 import org.lwjgl.opengl.GL30.*
@@ -21,7 +23,8 @@ class Renderer {
      * Renders a model to the display
      * @param model to draw
      */
-    fun render(model: RawModel){
+    fun render(texModel: TexturedModel){
+        val model = texModel.model
         glBindVertexArray(model.vaoID)
         glEnableVertexAttribArray(0)
         glDrawElements(GL_TRIANGLES, model.vertexCount, GL_UNSIGNED_INT, 0)

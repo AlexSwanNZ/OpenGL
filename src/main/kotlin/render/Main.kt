@@ -1,5 +1,6 @@
 package render
 
+import models.TexturedModel
 import org.lwjgl.glfw.*
 import org.lwjgl.opengl.*
 import org.lwjgl.glfw.Callbacks.*
@@ -8,6 +9,7 @@ import org.lwjgl.opengl.GL11.*
 import org.lwjgl.system.MemoryStack.*
 import org.lwjgl.system.MemoryUtil.*
 import shaders.StaticShader
+import textures.ModelTexture
 
 /**
  * OpenGL program that renders a colourful shaded quad to the screen
@@ -50,13 +52,15 @@ class Main : Thread(){
                 intArrayOf(
                         0,1,3,
                         3,1,2))
+        val tex = ModelTexture(loader.loadTexture("src/main/resources/grass.png"))
+        val texturedModel = TexturedModel(model, tex)
 
-        //The main rendeirng loop
+        //The main rendering loop
         while (!glfwWindowShouldClose(window)) {
 
             renderer.prepare()
             shader.start()
-            renderer.render(model)
+            renderer.render(texturedModel)
             shader.stop()
 
             glfwSwapBuffers(window) //Swaps the frame to the prepared one

@@ -1,4 +1,4 @@
-package render
+package models
 
 /**
  * Describes the models index in the Vertex Array list and the
