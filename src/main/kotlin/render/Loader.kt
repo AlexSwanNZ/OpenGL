@@ -17,6 +17,8 @@ class Loader {
     private val vaos = ArrayList<Int>(1)
     /** A list tracking Vertex Buffer Objects on the GPU and their respective ID's */
     private val vbos = ArrayList<Int>(1)
+    /** A list tracking Textures on the GPU and their respective ID's */
+    private val textures = ArrayList<Int>(1)
 
     /**
      * Loads a model into a Vertex Array Object
@@ -31,6 +33,23 @@ class Loader {
         storeInAttribList(0, positions)
         glBindVertexArray(0)
         return RawModel(vaoID, indices.size)
+    }
+
+    /**
+     * Loads a texture file
+     * @param file path to PNG image
+     * @return textureID on GPU
+     */
+    fun loadTexture(file: String): Int{
+        val img = TextureLoader.loadImage(file)
+        val texID = if(img != null) TextureLoader.loadTexture(img)
+        else{
+            System.err.println("Failed to load image $file")
+            System.exit(-1)
+            -1
+        }
+        textures.add(texID)
+        return texID
     }
 
     /**
@@ -102,6 +121,7 @@ class Loader {
     fun free(){
         for(vao in vaos) glDeleteVertexArrays(vao)
         for(vbo in vbos) glDeleteBuffers(vbo)
+        for(tex in textures) glDeleteTextures(tex)
     }
 
 }
