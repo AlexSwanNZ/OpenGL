@@ -5,8 +5,9 @@ in vec2 texCoords;
 out vec2 pass_texCoords;
 
 uniform mat4 transMatrix;
+uniform mat4 projMatrix;
 
 void main(void){
-    gl_Position = transMatrix * vec4(position, 1.0);
+    gl_Position = projMatrix * transMatrix * vec4(position, 1.0);
     pass_texCoords = texCoords;
 }

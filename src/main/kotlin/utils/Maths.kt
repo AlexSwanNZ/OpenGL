@@ -1,5 +1,6 @@
 package utils
 
+import entities.Entity
 import org.lwjgl.util.vector.Matrix4f
 import org.lwjgl.util.vector.Vector3f
 
@@ -21,6 +22,10 @@ class Maths {
         Matrix4f.scale(Vector3f(scale, scale, scale), mat, mat)
         return mat
 
+    }
+
+    fun createTransMatrix(e: Entity): Matrix4f{
+        return createTransMatrix(e.pos, e.rx, e.ry, e.rz, e.scale)
     }
 
 }

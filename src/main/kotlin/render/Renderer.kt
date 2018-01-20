@@ -1,17 +1,21 @@
 package render
 
-import models.RawModel
-import models.TexturedModel
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL13.GL_TEXTURE0
 import org.lwjgl.opengl.GL13.glActiveTexture
 import org.lwjgl.opengl.GL20.*
 import org.lwjgl.opengl.GL30.*
+import shaders.StaticShader
+import entities.Entity
+import utils.Maths
 
 /**
  * Render utility class for preparing a frame and rendering a model
  */
 class Renderer {
+
+    /** Maths utility object */
+    val maths = Maths()
 
     /**
      * Prepares a new frame by clearing it to a solid colour
@@ -25,14 +29,16 @@ class Renderer {
      * Renders a model to the display
      * @param model to draw
      */
-    fun render(texModel: TexturedModel){
-        val model = texModel.model
-        glBindVertexArray(model.vaoID)
+    fun render(entity: Entity, shader: StaticShader){
+        val texModel = entity.model
+        val rawModel = texModel.model
+        glBindVertexArray(rawModel.vaoID)
         glEnableVertexAttribArray(0)
         glEnableVertexAttribArray(1)
+        shader.loadTransMatrix(maths.createTransMatrix(entity))
         glActiveTexture(GL_TEXTURE0)
         glBindTexture(GL_TEXTURE_2D, texModel.tex.texID)
-        glDrawElements(GL_TRIANGLES, model.vertexCount, GL_UNSIGNED_INT, 0)
+        glDrawElements(GL_TRIANGLES, rawModel.vertexCount, GL_UNSIGNED_INT, 0)
         glDisableVertexAttribArray(0)
         glDisableVertexAttribArray(1)
         glBindVertexArray(0)

@@ -1,5 +1,6 @@
 package render
 
+import entities.Entity
 import models.TexturedModel
 import org.lwjgl.assimp.AIMatrix4x4
 import org.lwjgl.glfw.*
@@ -9,6 +10,7 @@ import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.system.MemoryStack.*
 import org.lwjgl.system.MemoryUtil.*
+import org.lwjgl.util.vector.Vector3f
 import shaders.StaticShader
 import textures.ModelTexture
 
@@ -61,13 +63,18 @@ class Main : Thread(){
                 ))
         val tex = ModelTexture(loader.loadTexture("wolf.png"))
         val texturedModel = TexturedModel(model, tex)
+        val entity = Entity(texturedModel, Vector3f(-1f,0f,0f),
+                0f, 0f, 0f, 1f)
 
         //The main rendering loop
         while (!glfwWindowShouldClose(window)) {
 
+            entity.move(0.002f, 0f, 0f)
+            entity.rotate(0f, 1f, 0f)
+
             renderer.prepare()
             shader.start()
-            renderer.render(texturedModel)
+            renderer.render(entity, shader)
             shader.stop()
 
             glfwSwapBuffers(window) //Swaps the frame to the prepared one
