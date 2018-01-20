@@ -3,6 +3,8 @@ package render
 import models.RawModel
 import models.TexturedModel
 import org.lwjgl.opengl.GL11.*
+import org.lwjgl.opengl.GL13.GL_TEXTURE0
+import org.lwjgl.opengl.GL13.glActiveTexture
 import org.lwjgl.opengl.GL20.*
 import org.lwjgl.opengl.GL30.*
 
@@ -27,8 +29,12 @@ class Renderer {
         val model = texModel.model
         glBindVertexArray(model.vaoID)
         glEnableVertexAttribArray(0)
+        glEnableVertexAttribArray(1)
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, texModel.tex.texID)
         glDrawElements(GL_TRIANGLES, model.vertexCount, GL_UNSIGNED_INT, 0)
         glDisableVertexAttribArray(0)
+        glDisableVertexAttribArray(1)
         glBindVertexArray(0)
     }
 

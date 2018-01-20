@@ -1,6 +1,7 @@
 package render
 
 import models.TexturedModel
+import org.lwjgl.assimp.AIMatrix4x4
 import org.lwjgl.glfw.*
 import org.lwjgl.opengl.*
 import org.lwjgl.glfw.Callbacks.*
@@ -51,8 +52,14 @@ class Main : Thread(){
                         0.5f, 0.5f, 0f),
                 intArrayOf(
                         0,1,3,
-                        3,1,2))
-        val tex = ModelTexture(loader.loadTexture("src/main/resources/grass.png"))
+                        3,1,2),
+                floatArrayOf(
+                        0f,0f,
+                        0f,1f,
+                        1f,1f,
+                        1f,0f
+                ))
+        val tex = ModelTexture(loader.loadTexture("wolf.png"))
         val texturedModel = TexturedModel(model, tex)
 
         //The main rendering loop
@@ -114,6 +121,7 @@ class Main : Thread(){
         glfwSwapInterval(1)
         glfwShowWindow(window)
         glEnable(GL_DEPTH_TEST)
+        glEnable(GL_TEXTURE_2D)
         println(glGetString(GL_VERSION))
 
         shader = StaticShader()

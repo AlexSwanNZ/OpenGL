@@ -1,9 +1,12 @@
 #version 440 core
 
 in vec3 position;
-out vec3 colour;
+in vec2 texCoords;
+out vec2 pass_texCoords;
+
+uniform mat4 transMatrix;
 
 void main(void){
-    gl_Position = vec4(position, 1.0);
-    colour = vec3(position.x+0.5, 1.0, position.y + 0.5);
+    gl_Position = transMatrix * vec4(position, 1.0);
+    pass_texCoords = texCoords;
 }

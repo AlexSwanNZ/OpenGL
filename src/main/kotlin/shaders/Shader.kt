@@ -1,7 +1,10 @@
 package shaders
 
+import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL20.*
+import org.lwjgl.util.vector.Matrix4f
+import org.lwjgl.util.vector.Vector3f
 import java.io.File
 import java.io.IOException
 
@@ -24,12 +27,40 @@ abstract class Shader(vFile: String, fFile: String){
     /** Shader program ID */
     private var id = glCreateProgram()
 
+    companion object { @JvmStatic
+    private val matBuf = BufferUtils.createFloatBuffer(16) }
+
     init{
         glAttachShader(id, vID)
         glAttachShader(id, fID)
         bindAttributes()
         glLinkProgram(id)
         glValidateProgram(id)
+        getAllUniformLocations()
+    }
+
+    protected abstract fun getAllUniformLocations()
+
+    protected fun getUniformLocation(uName: String): Int{
+        return glGetUniformLocation(id, uName)
+    }
+
+    protected fun loadFloat(loc: Int, value: Float){
+        glUniform1f(loc, value)
+    }
+
+    protected fun loadVector(loc: Int, vec: Vector3f){
+        glUniform3f(loc, vec.x, vec.y, vec.z)
+    }
+
+    protected fun loadBoolean(loc: Int, value: Boolean){
+        glUniform1f(loc, if(value) 1f else 0f)
+    }
+
+    protected fun loadMatrix(loc: Int, mat: Matrix4f){
+        mat.store(matBuf)
+        matBuf.flip()
+        glUniformMatrix4fv(loc, false, matBuf)
     }
 
     /**

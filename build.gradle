@@ -48,10 +48,16 @@ dependencies {
 
     //Not needed but keeping locally due to net problems and may use later
     compile "org.l33tlabs.twl:pngdecoder:1.0"
+
+    //Using some classes for PNG loading in the meantime...
     // https://mvnrepository.com/artifact/org.slick2d/slick2d-core
     compile group: 'org.slick2d', name: 'slick2d-core', version: '1.0.1'
 
+    //LWJGL 2.9.3 utils library for maths functions
+    // https://mvnrepository.com/artifact/org.lwjgl.lwjgl/lwjgl_util
+    compile group: 'org.lwjgl.lwjgl', name: 'lwjgl_util', version: '2.9.3'
 
+    //LWJGL core
     compile "org.lwjgl:lwjgl:$lwjglVersion"
     compile "org.lwjgl:lwjgl-assimp:$lwjglVersion"
     compile "org.lwjgl:lwjgl-bgfx:$lwjglVersion"
