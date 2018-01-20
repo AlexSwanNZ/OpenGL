@@ -34,10 +34,10 @@ class Main : Thread(){
 
     /** Loader utility object reference */
     private val loader = Loader()
-    /** Render utility object reference */
-    private val renderer = Renderer()
     /** Static Shader reference */
     private lateinit var shader: StaticShader
+    /** Render utility object reference */
+    private lateinit var renderer: Renderer
 
     /**
      * Executes the main Thread
@@ -63,14 +63,14 @@ class Main : Thread(){
                 ))
         val tex = ModelTexture(loader.loadTexture("wolf.png"))
         val texturedModel = TexturedModel(model, tex)
-        val entity = Entity(texturedModel, Vector3f(-1f,0f,0f),
+        val entity = Entity(texturedModel, Vector3f(-1f,0f,-1f),
                 0f, 0f, 0f, 1f)
 
         //The main rendering loop
         while (!glfwWindowShouldClose(window)) {
 
-            entity.move(0.002f, 0f, 0f)
-            entity.rotate(0f, 1f, 0f)
+            entity.move(0.002f, 0f, -0.004f)
+            entity.rotate(0f, 1f, 0.1f)
 
             renderer.prepare()
             shader.start()
@@ -132,6 +132,7 @@ class Main : Thread(){
         println(glGetString(GL_VERSION))
 
         shader = StaticShader()
+        renderer = Renderer(width, height, shader)
 
     }
 
