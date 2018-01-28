@@ -1,6 +1,8 @@
 package shaders
 
+import entities.Camera
 import org.lwjgl.util.vector.Matrix4f
+import utils.Maths
 
 /**
  * Shader for rendering static objects
@@ -15,6 +17,10 @@ class StaticShader: Shader(
     private var transMatrixLoc = super.getUniformLocation("transMatrix")
     /** Location of projection matrix */
     private var projMatrixLoc = super.getUniformLocation("projMatrix")
+    /** Location of view matrix */
+    private var viewMatrixLoc = super.getUniformLocation("viewMatrix")
+    /** Math utility object */
+    private val maths = Maths()
 
     /**
      * Binds the fragment shader input vectors
@@ -28,6 +34,7 @@ class StaticShader: Shader(
     override fun getAllUniformLocations() {
         transMatrixLoc = super.getUniformLocation("transMatrix")
         projMatrixLoc = super.getUniformLocation("projMatrix")
+        viewMatrixLoc = super.getUniformLocation("viewMatrix")
     }
 
     /**
@@ -44,6 +51,14 @@ class StaticShader: Shader(
      */
     fun loadProjMatrix(mat: Matrix4f){
         super.loadMatrix(projMatrixLoc, mat)
+    }
+
+    /**
+     * Loads a view matrix to OpenGL
+     * @param mat The projection matrix to load to OpenGL
+     */
+    fun loadViewMatrix(cam: Camera){
+        super.loadMatrix(viewMatrixLoc, maths.createViewMatrix(cam))
     }
 
 }

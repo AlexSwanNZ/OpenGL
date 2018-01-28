@@ -6,13 +6,11 @@ import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL15.*
 import org.lwjgl.opengl.GL20.*
 import org.lwjgl.opengl.GL30.*
-import org.newdawn.slick.opengl.ImageDataFactory
-import org.newdawn.slick.opengl.InternalTextureLoader
-import org.newdawn.slick.opengl.TextureImpl
-import java.io.BufferedInputStream
-import java.io.FileInputStream
+import org.lwjgl.stb.STBImage.*
+import org.lwjgl.system.MemoryStack
 import java.nio.FloatBuffer
 import java.nio.IntBuffer
+import org.lwjgl.opengl.GL13.GL_CLAMP_TO_BORDER
 
 /**
  * Utility class for binding models into OpenGL Vertex Array Objects
@@ -47,47 +45,41 @@ class Loader {
 
     /**
      * Loads a texture file
-     * @param file path to PNG image
-     * @return textureID on GPU
+     * @param file name to image
+     * @return texture ID on GPU
      */
     fun loadTexture(file: String): Int{
 
+        val texID = glGenTextures()
         val path = resPath + file
-        val imageData = ImageDataFactory.getImageDataFor(path)
-        val textureBuffer = imageData.loadImage(BufferedInputStream(FileInputStream(path)),
-                false, null)
-        val texID = InternalTextureLoader.createTextureID()
-        val texture = TextureImpl(path, GL_TEXTURE_2D, texID)
-        glBindTexture(GL_TEXTURE_2D, texID)
 
-        val width = imageData.width
-        val height = imageData.height
-        val hasAlpha = imageData.depth == 32
+        MemoryStack.stackPush().use { stack ->
 
-        texture.textureWidth = imageData.texWidth
-        texture.textureHeight = imageData.texHeight
+            val w = stack.mallocInt(1)
+            val h = stack.mallocInt(1)
+            val comp = stack.mallocInt(1)
 
-        //Here is where the maximum texture size should be checked...
+            stbi_set_flip_vertically_on_load(true)
+            val image = stbi_load(path, w, h, comp, 4)
+                    ?: throw RuntimeException("Failed to load a texture file!"
+                    + System.lineSeparator() + stbi_failure_reason())
 
-        val srcPixelFormat = if (hasAlpha) GL_RGBA else GL_RGB
+            glBindTexture(GL_TEXTURE_2D, texID)
 
-        texture.setWidth(width)
-        texture.setHeight(height)
-        texture.setAlpha(hasAlpha)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+            val srcPixelFormat = //if (hasAlpha) GL_RGBA else GL_RGB
+                    GL_RGBA
 
-        glTexImage2D(GL_TEXTURE_2D,
-                0,
-                GL_RGBA8,
-                InternalTextureLoader.get2Fold(width),
-                InternalTextureLoader.get2Fold(height),
-                0,
-                srcPixelFormat,
-                GL_UNSIGNED_BYTE,
-                textureBuffer)
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, w.get(), h.get(),
+                    0, srcPixelFormat, GL_UNSIGNED_BYTE, image)
 
+        }
+
+        textures.add(texID)
         return texID
 
     }

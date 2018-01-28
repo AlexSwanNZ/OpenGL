@@ -1,8 +1,9 @@
 package render
 
+import entities.Camera
 import entities.Entity
 import models.TexturedModel
-import org.lwjgl.assimp.AIMatrix4x4
+import org.joml.Vector3f
 import org.lwjgl.glfw.*
 import org.lwjgl.opengl.*
 import org.lwjgl.glfw.Callbacks.*
@@ -10,7 +11,6 @@ import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.system.MemoryStack.*
 import org.lwjgl.system.MemoryUtil.*
-import org.lwjgl.util.vector.Vector3f
 import shaders.StaticShader
 import textures.ModelTexture
 
@@ -38,6 +38,8 @@ class Main : Thread(){
     private lateinit var shader: StaticShader
     /** Render utility object reference */
     private lateinit var renderer: Renderer
+    /** Camera */
+    private lateinit var camera: Camera
 
     /**
      * Executes the main Thread
@@ -71,9 +73,11 @@ class Main : Thread(){
 
             entity.move(0.002f, 0f, -0.004f)
             entity.rotate(0f, 1f, 0.1f)
+            camera.move()
 
             renderer.prepare()
             shader.start()
+            shader.loadViewMatrix(camera)
             renderer.render(entity, shader)
             shader.stop()
 
@@ -133,6 +137,7 @@ class Main : Thread(){
 
         shader = StaticShader()
         renderer = Renderer(width, height, shader)
+        camera = Camera()
 
     }
 
