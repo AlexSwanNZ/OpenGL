@@ -15,7 +15,7 @@ import shaders.StaticShader
 import textures.ModelTexture
 
 /**
- * OpenGL program that renders a colourful shaded quad to the screen
+ * OpenGL program that renders a texture to the screen
  *
  * @author Alex Swan
  * @version 2018.01.15
@@ -129,7 +129,7 @@ class Main : Thread(){
 
         glfwMakeContextCurrent(window)
         GL.createCapabilities()
-        glfwSwapInterval(1)
+        glfwSwapInterval(1) //Enable V Sync
         glfwShowWindow(window)
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_TEXTURE_2D)
@@ -137,7 +137,7 @@ class Main : Thread(){
 
         shader = StaticShader()
         renderer = Renderer(width, height, shader)
-        camera = Camera()
+        camera = Camera(window)
 
     }
 
