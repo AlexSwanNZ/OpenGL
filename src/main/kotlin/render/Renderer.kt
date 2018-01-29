@@ -43,7 +43,6 @@ class Renderer(
      * Prepares a new frame by clearing it to a solid colour
      */
     fun prepare(){
-        glEnable(GL_DEPTH_TEST)
         glClearColor(0.0f,0.0f,0.0f,0.0f)
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
     }

@@ -55,7 +55,7 @@ class StaticShader: Shader(
 
     /**
      * Loads a view matrix to OpenGL
-     * @param mat The projection matrix to load to OpenGL
+     * @param cam The camera to use to create the view matrix
      */
     fun loadViewMatrix(cam: Camera){
         super.loadMatrix(viewMatrixLoc, maths.createViewMatrix(cam))

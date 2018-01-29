@@ -6,11 +6,13 @@ import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL15.*
 import org.lwjgl.opengl.GL20.*
 import org.lwjgl.opengl.GL30.*
-import org.lwjgl.stb.STBImage.*
-import org.lwjgl.system.MemoryStack
+import org.newdawn.slick.opengl.ImageDataFactory
+import org.newdawn.slick.opengl.InternalTextureLoader
+import org.newdawn.slick.opengl.TextureImpl
+import java.io.BufferedInputStream
+import java.io.FileInputStream
 import java.nio.FloatBuffer
 import java.nio.IntBuffer
-import org.lwjgl.opengl.GL13.GL_CLAMP_TO_BORDER
 
 /**
  * Utility class for binding models into OpenGL Vertex Array Objects
@@ -45,41 +47,47 @@ class Loader {
 
     /**
      * Loads a texture file
-     * @param file name to image
-     * @return texture ID on GPU
+     * @param file path to PNG image
+     * @return textureID on GPU
      */
     fun loadTexture(file: String): Int{
 
-        val texID = glGenTextures()
         val path = resPath + file
+        val imageData = ImageDataFactory.getImageDataFor(path)
+        val textureBuffer = imageData.loadImage(BufferedInputStream(FileInputStream(path)),
+                false, null)
+        val texID = InternalTextureLoader.createTextureID()
+        val texture = TextureImpl(path, GL_TEXTURE_2D, texID)
+        glBindTexture(GL_TEXTURE_2D, texID)
 
-        MemoryStack.stackPush().use { stack ->
+        val width = imageData.width
+        val height = imageData.height
+        val hasAlpha = imageData.depth == 32
 
-            val w = stack.mallocInt(1)
-            val h = stack.mallocInt(1)
-            val comp = stack.mallocInt(1)
+        texture.textureWidth = imageData.texWidth
+        texture.textureHeight = imageData.texHeight
 
-            stbi_set_flip_vertically_on_load(true)
-            val image = stbi_load(path, w, h, comp, 4)
-                    ?: throw RuntimeException("Failed to load a texture file!"
-                    + System.lineSeparator() + stbi_failure_reason())
+        //Here is where the maximum texture size should be checked...
 
-            glBindTexture(GL_TEXTURE_2D, texID)
+        val srcPixelFormat = if (hasAlpha) GL_RGBA else GL_RGB
 
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+        texture.setWidth(width)
+        texture.setHeight(height)
+        texture.setAlpha(hasAlpha)
 
-            val srcPixelFormat = //if (hasAlpha) GL_RGBA else GL_RGB
-                    GL_RGBA
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
 
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, w.get(), h.get(),
-                    0, srcPixelFormat, GL_UNSIGNED_BYTE, image)
+        glTexImage2D(GL_TEXTURE_2D,
+                0,
+                GL_RGBA8,
+                InternalTextureLoader.get2Fold(width),
+                InternalTextureLoader.get2Fold(height),
+                0,
+                srcPixelFormat,
+                GL_UNSIGNED_BYTE,
+                textureBuffer)
 
-        }
-
-        textures.add(texID)
         return texID
 
     }
@@ -108,7 +116,7 @@ class Loader {
         val buffer = storeInFloatBuffer(data)
         glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW)
         glVertexAttribPointer(  attribNum, coordSize, GL_FLOAT,
-                                false, 0, 0)
+                false, 0, 0)
         glBindBuffer(GL_ARRAY_BUFFER, 0)
     }
 
@@ -120,7 +128,7 @@ class Loader {
     private fun storeInFloatBuffer(data: FloatArray): FloatBuffer {
         val buffer: FloatBuffer = BufferUtils.createFloatBuffer(data.size)
         buffer.apply{   put(data)
-                        flip()      }
+            flip()      }
         return buffer
     }
 

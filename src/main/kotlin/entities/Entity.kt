@@ -1,7 +1,7 @@
 package entities
 
 import models.TexturedModel
-import org.joml.Vector3f
+import org.lwjgl.util.vector.Vector3f
 
 class Entity(
         val model: TexturedModel,
