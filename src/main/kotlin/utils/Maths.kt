@@ -9,32 +9,20 @@ class Maths {
 
     /**
      * Creates a transformation matrix
-     * @param trans The translation vector
-     * @param rx X rotation
-     * @param ry Y rotation
-     * @param rz Z rotation
-     * @param scale Scale
+     * @param e Entity to create matrix for
      * @return Transformation matrix
      */
-    private fun createTransMatrix(trans: Vector3f,
-                                  rx: Float, ry: Float, rz: Float,
-                                  scale: Float): Matrix4f {
+    fun createTransMatrix(e: Entity): Matrix4f {
 
         val mat = Matrix4f()
         mat.apply{
             identity()
-            translate(trans)
-            rotateX(rad(rx))
-            rotateY(rad(ry))
-            rotateZ(rad(rz))
-            scale(scale)
+            translate(e.pos)
+            rotateXYZ(rad(e.rot))
+            scale(e.scale)
         }
         return mat
 
-    }
-
-    fun createTransMatrix(e: Entity): Matrix4f{
-        return createTransMatrix(e.pos, e.rx, e.ry, e.rz, e.scale)
     }
 
     /**
@@ -60,6 +48,15 @@ class Maths {
      */
     private fun rad(f: Float): Float{
         return Math.toRadians(f.toDouble()).toFloat()
+    }
+
+    /**
+     * Converts a float vector to radians
+     * @param v Vector3f to convert to radians
+     * @return Vector3f in radians
+     */
+    private fun rad(v: Vector3f): Vector3f{
+        return Vector3f(rad(v.x), rad(v.y), rad(v.z))
     }
 
 }
