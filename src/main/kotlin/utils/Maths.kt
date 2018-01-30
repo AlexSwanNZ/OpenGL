@@ -2,25 +2,33 @@ package utils
 
 import entities.Camera
 import entities.Entity
-import org.lwjgl.util.vector.Matrix4f
-import org.lwjgl.util.vector.Vector3f
+import org.joml.Matrix4f
+import org.joml.Vector3f
 
 class Maths {
 
-    fun createTransMatrix(trans: Vector3f,
-                          rx: Float, ry: Float, rz: Float,
-                          scale: Float): Matrix4f {
+    /**
+     * Creates a transformation matrix
+     * @param trans The translation vector
+     * @param rx X rotation
+     * @param ry Y rotation
+     * @param rz Z rotation
+     * @param scale Scale
+     * @return Transformation matrix
+     */
+    private fun createTransMatrix(trans: Vector3f,
+                                  rx: Float, ry: Float, rz: Float,
+                                  scale: Float): Matrix4f {
 
         val mat = Matrix4f()
-        mat.setIdentity()
-        Matrix4f.translate(trans, mat, mat)
-        Matrix4f.rotate(Math.toRadians(rx.toDouble()).toFloat(),
-                Vector3f(1f,0f,0f), mat, mat)
-        Matrix4f.rotate(Math.toRadians(ry.toDouble()).toFloat(),
-                Vector3f(0f,1f,0f), mat, mat)
-        Matrix4f.rotate(Math.toRadians(rz.toDouble()).toFloat(),
-                Vector3f(0f,0f,1f), mat, mat)
-        Matrix4f.scale(Vector3f(scale, scale, scale), mat, mat)
+        mat.apply{
+            identity()
+            translate(trans)
+            rotateX(rad(rx))
+            rotateY(rad(ry))
+            rotateZ(rad(rz))
+            scale(scale)
+        }
         return mat
 
     }
@@ -36,15 +44,22 @@ class Maths {
      */
     fun createViewMatrix(cam: Camera): Matrix4f{
         val mat = Matrix4f()
-
-        mat.setIdentity()
-        Matrix4f.rotate(Math.toRadians(cam.pitch.toDouble()).toFloat(),
-                Vector3f(1f,0f,0f), mat, mat)
-        Matrix4f.rotate(Math.toRadians(cam.yaw.toDouble()).toFloat(),
-                Vector3f(0f,1f,0f), mat, mat)
-        Matrix4f.translate(Vector3f(-cam.pos.x, -cam.pos.y, -cam.pos.z), mat, mat)
-
+        mat.apply{
+            identity()
+            rotateX(rad(cam.pitch))
+            rotateY(rad(cam.yaw))
+            translate(-cam.pos.x, -cam.pos.y, -cam.pos.z)
+        }
         return mat
+    }
+
+    /**
+     * Converts a float to radians
+     * @param f Float to convert to radians
+     * @return radians
+     */
+    private fun rad(f: Float): Float{
+        return Math.toRadians(f.toDouble()).toFloat()
     }
 
 }

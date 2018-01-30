@@ -7,8 +7,7 @@ import org.lwjgl.opengl.GL20.*
 import org.lwjgl.opengl.GL30.*
 import shaders.StaticShader
 import entities.Entity
-import org.lwjgl.util.vector.Matrix4f
-import shaders.Shader
+import org.joml.Matrix4f
 import utils.Maths
 
 /**
@@ -79,12 +78,12 @@ class Renderer(
         val frustrumLength = farPlane - nearPlane
 
         val pm = Matrix4f()
-        pm.m00 = xScale
-        pm.m11 = yScale
-        pm.m22 = -((farPlane + nearPlane) / frustrumLength)
-        pm.m33 = 0f
-        pm.m23 = -1f
-        pm.m32 = -((2f * farPlane * nearPlane) / frustrumLength)
+        pm.m00(xScale)
+        pm.m11(yScale)
+        pm.m22(-((farPlane + nearPlane) / frustrumLength))
+        pm.m33(0f)
+        pm.m23(-1f)
+        pm.m32(-((2f * farPlane * nearPlane) / frustrumLength))
 
         return pm
     }

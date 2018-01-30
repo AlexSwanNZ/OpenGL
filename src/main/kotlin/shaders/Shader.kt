@@ -1,10 +1,10 @@
 package shaders
 
+import org.joml.Matrix4f
+import org.joml.Vector3f
 import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL20.*
-import org.lwjgl.util.vector.Matrix4f
-import org.lwjgl.util.vector.Vector3f
 import java.io.File
 import java.io.IOException
 
@@ -29,6 +29,7 @@ abstract class Shader(vFile: String, fFile: String){
 
     companion object { @JvmStatic
     private val matBuf = BufferUtils.createFloatBuffer(16) }
+    private val fa = FloatArray(16) //Surely this isn't required??
 
     init{
         glAttachShader(id, vID)
@@ -58,7 +59,8 @@ abstract class Shader(vFile: String, fFile: String){
     }
 
     protected fun loadMatrix(loc: Int, mat: Matrix4f){
-        mat.store(matBuf)
+        mat.get(fa)
+        matBuf.put(fa)
         matBuf.flip()
         glUniformMatrix4fv(loc, false, matBuf)
     }
